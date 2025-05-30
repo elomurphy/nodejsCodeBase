@@ -1,4 +1,4 @@
-name: AWS ECR Public Build & Push
+name: AWS Public ECR Build & Push
 
 on:
   push:
@@ -17,15 +17,18 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+        aws-region: us-east-1  # Public ECR is global but uses us-east-1 for token auth
 
     - name: Login to Amazon ECR Public
-      id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
       with:
         registry-type: public
 
-    - name: Build and Push to Public ECR
+    - name: Build and Tag Docker Image
       run: |
-        docker build -t public.ecr.aws/${{ secrets.AWS_ECR_ALIAS }}/nodejsapp .
-        docker push public.ecr.aws/${{ secrets.AWS_ECR_ALIAS }}/nodejsapp
+        docker build -t public.ecr.aws/m3o3o8o0/elomurphy/nodejscodebase:latest .
+
+    - name: Push Docker Image to Public ECR
+      run: |
+        docker push public.ecr.aws/m3o3o8o0/elomurphy/nodejscodebase:latest
+
